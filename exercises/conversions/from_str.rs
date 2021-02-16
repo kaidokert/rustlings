@@ -22,27 +22,18 @@ struct Person {
 impl FromStr for Person {
     type Err = String;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
-        let err = Err("Badkarma".to_string());
-        if s.len() > 0 {
-            let mut spl = s.split(",");
-            let name = match spl.next() {
-                Some(val) => val,
-                None => return err
-            };
-            if name.is_empty() {
-                return err;
-            }
-            let age = match spl.next() {
-                Some(val) => val,
-                None => return err
-            };
-            let realage = match age.parse::<usize>() {
-                Ok(val) => val,
-                Err(_) => return err
-            };
-            return Ok(Person{ name: name.to_string(), age: realage})
+        let err = Err("Bad input".to_string());
+        if s.len() == 0 {
+            return err
         }
-        err
+        let mut spl = s.split(",");
+        let name = spl.next().ok_or("No name")?;
+        if name.is_empty() {
+            return err;
+        }
+        let age = spl.next().ok_or("No age")?;
+        let realage = age.parse::<usize>().or(Err("bad".to_string()))?;
+        Ok(Person{ name: name.to_string(), age: realage})
     }
 }
 
